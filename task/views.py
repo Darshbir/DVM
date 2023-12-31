@@ -84,9 +84,11 @@ def home(request):
     if not queryset:
         messages.error(request, 'No trains found for selected criteria')
 
-    return render(request, 'home.html', {'queryset': queryset})
+    sectionset = choices.objects.all()
+
+    return render(request, 'home.html', {'queryset': queryset, 'sectionset': sectionset})
 
 
 @login_required(login_url="/login/")
-def book_ticket(request):
-    pass
+def book_page(request):
+    return render(request , 'book.html')

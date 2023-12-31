@@ -29,28 +29,34 @@
                         <th>Start</th>
                         <th>Destination</th>
                         <th>Operating Days</th>
-                        <th>Seats</th>
-                        <th>Price</th>
+                        <th>Time</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for train in queryset %}
-                        <tr>
-                            <td>{{ train.name }}</td>
-                            <td>{{ train.start }}</td>
-                            <td>{{ train.destination }}</td>
-                            <td>
-                                {% for day in train.operating_days.all %}
-                                    {{ day.name }}
-                                    {% if not forloop.last %}, {% endif %}
-                                {% endfor %}
-                            </td>
-                            <td>{{ train.seats }}</td>
-                            <td>{{ train.price }}</td>
-                            <td><button class="btn btn-success">Book</button></td>
-                        </tr>
-                    {% endfor %}
+                    <tr>
+                        <td>{{ train.name }}</td>
+                        <td>{{ train.start }}</td>
+                        <td>{{ train.destination }}</td>
+                        <td>
+                            {% for day in train.operating_days.all %}
+                                {{ day.name }}
+                                {% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>{{ train.time }}</td>
+                        
+                        <td>
+                            {% if train.is_active %}
+                                <button><a href="/book/" class="btn fw-bold">Book</a></button>
+                            {% else %}
+                                <p>Unavialable</p>
+                            {% endif %}
+                        </td>
+                      
+                    </tr>
+                {% endfor %}                
                 </tbody>
             </table>
         {% else %}
