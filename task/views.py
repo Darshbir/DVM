@@ -66,7 +66,11 @@ def login_page(request):
 
 @login_required(login_url="/login/")
 def home(request):
+    
     queryset = Train.objects.all()
+
+    for train in queryset:
+        train.update_active_status()
 
     if request.GET.get('start') and request.GET.get('destination') and request.GET.get('date'):
         start = request.GET.get('start')
@@ -84,7 +88,8 @@ def home(request):
     if not queryset:
         messages.error(request, 'No trains found for selected criteria')
 
-    sectionset = choices.objects.all()
+    sectionset = Choices.objects.all()
+    
 
     return render(request, 'home.html', {'queryset': queryset, 'sectionset': sectionset})
 
@@ -92,3 +97,6 @@ def home(request):
 @login_required(login_url="/login/")
 def book_page(request):
     return render(request , 'book.html')
+
+def add_money(request):
+    pass

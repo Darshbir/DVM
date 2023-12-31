@@ -46,12 +46,11 @@
                             {% endfor %}
                         </td>
                         <td>{{ train.time }}</td>
-                        
                         <td>
                             {% if train.is_active %}
                                 <button><a href="/book/" class="btn fw-bold">Book</a></button>
                             {% else %}
-                                <p>Unavialable</p>
+                                <p>Unavailable</p>
                             {% endif %}
                         </td>
                       

@@ -3,5 +3,6 @@ from .models import *
 # Register your models here.
 admin.site.register(Day)
 admin.site.register(Train)
-admin.site.register(sections)
-admin.site.register(choices)
+admin.site.register(Section)
+admin.site.register(Choices)
+admin.site.register(Train_operating_days)
