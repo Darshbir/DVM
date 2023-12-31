@@ -73,7 +73,7 @@ class Section(models.Model):
     
     def available_seats(self, seat_type):
         total_seats = self.name.filter(name=seat_type).count()
-        booked_seats = 0
+        booked_seats = 0    
         return max(0, total_seats - booked_seats)
     
 class Wallet(models.Model):

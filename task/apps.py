@@ -5,4 +5,4 @@ class TaskConfig(AppConfig):
     name = 'task'
 
     def ready(self):
-        import task.signals  # This line ensures that the signals are imported and connected
+        import task.signals

@@ -108,7 +108,7 @@ def profile(request):
         wallet.save()
 
     if request.method == "POST":
-        amount = Decimal(request.POST.get('amount', 0))  # Convert to Decimal
+        amount = Decimal(request.POST.get('amount', 0))
         wallet.balance += amount
         wallet.save()
         messages.success(request, f'Added {amount} to your wallet.')
