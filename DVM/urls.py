@@ -30,5 +30,5 @@ urlpatterns = [
     # path('login/', TemplateView.as_view(template_name="index.html")),
     # path('accounts/', include('allauth.urls')),
     # path('logout/', LogoutView.as_view()),
-    path('add_money/', add_money, name = "add_money"),
+    path('profile/', profile, name = "profile"),
 ]

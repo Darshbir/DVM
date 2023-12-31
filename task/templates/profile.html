@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block start %}
+
+    <div class="container d-flex justify-content-center align-items-center vh-100">
+        {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-primary" role="alert">
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            </div>
+        {% endfor %}
+        {% endif %}
+        <div class="card" style="width: 18rem; margin-top: 10vh;">
+            <div class="card-body">
+                <h5 class="card-title text-center">Profile</h5>
+                <p class="card-text">{{ request.user.first_name }} {{ request.user.last_name }} </p>
+                <p class="card-text">Balance: {{ wallet.balance }}</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <label for="amount">Amount:</label>
+                    <input type="number" name="amount" required>
+                    <button type="submit" class="btn btn-primary">Add Money</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

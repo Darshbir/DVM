@@ -1,4 +1,7 @@
 from django.db import models
+from django.contrib.auth.models import User
+
+# Create your models here.
 
 DAYS_OF_WEEK_CHOICES = [
     ('Mon', 'Monday'),
@@ -72,3 +75,10 @@ class Section(models.Model):
         total_seats = self.name.filter(name=seat_type).count()
         booked_seats = 0
         return max(0, total_seats - booked_seats)
+    
+class Wallet(models.Model):
+    user = models.OneToOneField(User , on_delete = models.CASCADE, related_name = 'wallet')
+    balance = models.DecimalField(max_digits = 10, decimal_places = 2, default = 0)
+
+    def __str__(self):
+        return f"Wallet of {self.user.username}"

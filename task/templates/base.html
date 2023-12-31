@@ -9,10 +9,13 @@
 <body>
     <nav class="navbar bg-primary" data-bs-theme="dark">
         <div class="container-fluid">
-      <a class="navbar-brand" href="#">Darshbir's Task</a>
-        </ul>
         {% if request.user.is_authenticated %}
-          <button> <a href = "/add_money/" class="btn fw-bold">Add Money</a></button>
+          <a class="navbar-brand" href="/profile/">Welcome</a>
+        {% else %}
+        <a class="navbar-brand" href="#">Welcome</a>
+        {% endif %}
+        {% if request.user.is_authenticated %}
+          <button style = 'margin-left:auto'> <a href = "/add_money/" class="btn fw-bold">Add Money</a></button>
         {% endif %}
           <button>
         {% if request.user.is_authenticated %}

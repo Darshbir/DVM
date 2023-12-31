@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,get_object_or_404
 from .models import *
 from django.contrib.auth.models import User
 from django.contrib import messages
@@ -6,11 +6,12 @@ from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth.decorators import login_required
 from datetime import datetime
+from decimal import Decimal
 
 # Create your views here.
 
 
-def register_page(request):  # sourcery skip: last-if-guard
+def register_page(request):
     if request.method == "POST":
         first_name = request.POST.get('first_name')
         password = request.POST.get('password')
@@ -98,5 +99,18 @@ def home(request):
 def book_page(request):
     return render(request , 'book.html')
 
-def add_money(request):
-    pass
+@login_required
+def profile(request):
+    try:
+        wallet = Wallet.objects.get(user=request.user)
+    except Wallet.DoesNotExist:
+        wallet = Wallet.objects.create(user=request.user)
+        wallet.save()
+
+    if request.method == "POST":
+        amount = Decimal(request.POST.get('amount', 0))  # Convert to Decimal
+        wallet.balance += amount
+        wallet.save()
+        messages.success(request, f'Added {amount} to your wallet.')
+
+    return render(request, 'profile.html', {'wallet': wallet})
