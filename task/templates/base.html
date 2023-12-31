@@ -15,7 +15,7 @@
         <a class="navbar-brand" href="#">Welcome</a>
         {% endif %}
         {% if request.user.is_authenticated %}
-          <button style = 'margin-left:auto'> <a href = "/add_money/" class="btn fw-bold">Add Money</a></button>
+          <button style = 'margin-left:auto'> <a href = "/profile/" class="btn fw-bold">Add Money</a></button>
         {% endif %}
           <button>
         {% if request.user.is_authenticated %}
