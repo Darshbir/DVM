@@ -48,7 +48,7 @@
                         <td>{{ train.time }}</td>
                         <td>
                             {% if train.is_active %}
-                                <button><a href="/book/" class="btn fw-bold">Book</a></button>
+                                <button><a href="/book/{{ train.id }}" class="btn fw-bold">Book</a></button>
                             {% else %}
                                 <p>Unavailable</p>
                             {% endif %}

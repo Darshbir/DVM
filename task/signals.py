@@ -8,4 +8,4 @@ def create_user_wallet(sender, instance, created, **kwargs):
     if created:
         Wallet.objects.create(user=instance)
 
-post_save.connect(create_user_wallet, sender=User)
+post_save.connect(create_user_wallet, sender=User)  

@@ -1,4 +1,39 @@
 {% extends "base.html" %}
 {% block start %}
 
+<div class="container d-flex justify-content-center align-items-center vh-100">
+    {% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-primary" role="alert">
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        </div>
+    {% endfor %}
+    {% endif %}
+    <div class="card" style="width: 18rem; margin-top: 10vh;">
+        <div class="card-body">
+            
+            <h2>Train Details</h2>
+            <p class="card-text">Name: {{ train.name }}</p>
+            <p class="card-text">Start: {{ train.start }}</p>
+            <p class="card-text">Destination: {{ train.destination }}</p>
+            <p class="card-text">Time: {{ train.time }}</p>
+            <p class="card-text">Balance: {{ user.wallet.balance }}</p>
+            <form method="post" action="{% url 'book_page' train.id %}">
+                {% csrf_token %}
+                <label for="section">Choose Section:</label>
+                <select name="section" id="section">
+                    {% for section in sections %}
+                        <option value="{{ section.id }}">{{ section.name }} - {{section.price}}</option>
+                    {% endfor %}
+                </select>   
+                <br>
+                <label for="num_seats">Number of Seats:</label>
+                <input type="number" name="num_seats" required>
+                <br>
+                <button type="submit" class="btn btn-primary">Book Seats</button>
+            </form>
+        </div>
+    </div>
+</div>
+
 {% endblock %}

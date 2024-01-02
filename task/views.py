@@ -95,17 +95,16 @@ def home(request):
     return render(request, 'home.html', {'queryset': queryset, 'sectionset': sectionset})
 
 
-@login_required(login_url="/login/")
-def book_page(request):
-    return render(request , 'book.html')
-
-@login_required
+@login_required(login_url = "/login/")
 def profile(request):
+    this_user = request.user
     try:
-        wallet = Wallet.objects.get(user=request.user)
+        wallet = Wallet.objects.get(user= this_user)
     except Wallet.DoesNotExist:
-        wallet = Wallet.objects.create(user=request.user)
+        wallet = Wallet.objects.create(user= this_user)
         wallet.save()
+    
+    bookings = Booking.objects.filter(user= this_user)
 
     if request.method == "POST":
         amount = Decimal(request.POST.get('amount', 0))
@@ -113,4 +112,36 @@ def profile(request):
         wallet.save()
         messages.success(request, f'Added {amount} to your wallet.')
 
-    return render(request, 'profile.html', {'wallet': wallet})
+    return render(request, 'profile.html', {'wallet': wallet , 'user' : this_user , 'bookings' : bookings})
+
+@login_required(login_url="/login/")
+def book_page(request, train_id):
+    train = get_object_or_404(Train, id=train_id)
+    user_wallet = request.user.wallet
+    this_user = request.user
+    selected_section = None
+    if request.method == "POST":
+        selected_section_id = request.POST.get('section')
+        selected_section = get_object_or_404(Section, id=selected_section_id)
+
+        num_seats = int(request.POST.get('num_seats', 0))
+
+        if num_seats <= 0:
+            messages.error(request, 'Select a valid number of seats.')
+        elif user_wallet.balance < (selected_section.price * num_seats):
+            messages.error(request, 'Insufficient balance')
+        elif selected_section.available_seats() < num_seats:
+            messages.error(request, 'Not enough available seats.')
+        else:
+            Booking.objects.create(user=this_user, section=selected_section, num_seats=num_seats)
+            
+            selected_section.booked_seats += num_seats
+            selected_section.save()
+
+            train.update_active_status()
+            user_wallet.balance -= selected_section.price * num_seats
+            user_wallet.save()
+            messages.success(request, f'Successfully booked {num_seats} seat(s) in {selected_section.name}.')
+            return redirect('home')
+
+    return render(request, 'book.html', {'train': train, 'user': this_user, 'sections': train.sections.all()})
