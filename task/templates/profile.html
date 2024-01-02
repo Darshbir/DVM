@@ -34,6 +34,7 @@
                     <th>Train Name</th>
                     <th>Journey</th>
                     <th>Time</th>
+                    <th>Date</th>
                     <th>Seats</th>
                 </tr>
             </thead>
@@ -43,6 +44,7 @@
                     <td>{{ booking.section.train.name }}</td>
                     <td>{{ booking.section.train.start}} - {{booking.section.train.destination }}</td>
                     <td>{{ booking.section.train.time }}</td>
+                    <td>{{ booking.date }}</td>
                     <td>{{ booking.section.name }} - {{ booking.num_seats }}</td>
                 </tr>
         {% endfor %}

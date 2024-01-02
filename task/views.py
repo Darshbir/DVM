@@ -126,22 +126,29 @@ def book_page(request, train_id):
 
         num_seats = int(request.POST.get('num_seats', 0))
 
-        if num_seats <= 0:
-            messages.error(request, 'Select a valid number of seats.')
-        elif user_wallet.balance < (selected_section.price * num_seats):
-            messages.error(request, 'Insufficient balance')
-        elif selected_section.available_seats() < num_seats:
-            messages.error(request, 'Not enough available seats.')
-        else:
-            Booking.objects.create(user=this_user, section=selected_section, num_seats=num_seats)
-            
-            selected_section.booked_seats += num_seats
-            selected_section.save()
+        date = request.POST.get('date')
+        selected_day = datetime.strptime(date, "%Y-%m-%d").strftime('%a')
 
-            train.update_active_status()
-            user_wallet.balance -= selected_section.price * num_seats
-            user_wallet.save()
-            messages.success(request, f'Successfully booked {num_seats} seat(s) in {selected_section.name}.')
-            return redirect('home')
+
+        if train.operating_days.filter(name__iexact=selected_day).exists():
+            if num_seats <= 0:
+                messages.error(request, 'Select a valid number of seats.')
+            elif user_wallet.balance < (selected_section.price * num_seats):
+                messages.error(request, 'Insufficient balance')
+            elif selected_section.available_seats() < num_seats:
+                messages.error(request, 'Not enough available seats.')
+            else:
+                Booking.objects.create(user=this_user, section=selected_section, num_seats=num_seats, date = date)
+
+                selected_section.booked_seats += num_seats
+                selected_section.save()
+
+                train.update_active_status()
+                user_wallet.balance -= selected_section.price * num_seats
+                user_wallet.save()
+                messages.success(request, f'Successfully booked {num_seats} seat(s) in {selected_section.name}.')
+                return redirect('home')
+        else:
+            messages.error(request, 'Train does not run on this')
 
     return render(request, 'book.html', {'train': train, 'user': this_user, 'sections': train.sections.all()})

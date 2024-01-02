@@ -17,9 +17,17 @@
             <p class="card-text">Start: {{ train.start }}</p>
             <p class="card-text">Destination: {{ train.destination }}</p>
             <p class="card-text">Time: {{ train.time }}</p>
+            <p class="card-text">Operating Days: 
+            {% for day in train.operating_days.all %}
+                {{ day.name }}
+                {% if not forloop.last %}, {% endif %}
+            {% endfor %}
+            </p>
             <p class="card-text">Balance: {{ user.wallet.balance }}</p>
             <form method="post" action="{% url 'book_page' train.id %}">
                 {% csrf_token %}
+                <label for="exampleInputEmail1" class="form-label">Date</label>
+                <input name="date" required type="date" class="form-control">
                 <label for="section">Choose Section:</label>
                 <select name="section" id="section">
                     {% for section in sections %}
