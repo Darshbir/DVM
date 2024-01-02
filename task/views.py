@@ -17,6 +17,7 @@ def register_page(request):
         password = request.POST.get('password')
         username = request.POST.get('username')
         last_name = request.POST.get('last_name')
+        email = request.POST.get('email')
 
 
         user = User.objects.filter(username = username)
@@ -29,6 +30,7 @@ def register_page(request):
             first_name = first_name,
             last_name = last_name,
             username = username,
+            email = email,
         )
 
         user.set_password(password)
@@ -69,7 +71,7 @@ def login_page(request):
 def home(request):
     
     queryset = Train.objects.all()
-
+    
     for train in queryset:
         train.update_active_status()
 
@@ -85,6 +87,8 @@ def home(request):
             destination__iexact=destination,
             operating_days__name__icontains=selected_day
         )
+        for train in queryset:
+            train.update_active_status()
 
     if not queryset:
         messages.error(request, 'No trains found for selected criteria')
