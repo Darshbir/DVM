@@ -7,9 +7,10 @@ from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth.decorators import login_required
 from datetime import datetime
 from decimal import Decimal
+from django.core.mail import send_mail
+from django.conf import settings
 
 # Create your views here.
-
 
 def register_page(request):
     if request.method == "POST":
@@ -148,10 +149,24 @@ def book_page(request, train_id):
                 selected_section.save()
 
                 train.update_active_status()
-                user_wallet.balance -= selected_section.price * num_seats
+                price = selected_section.price * num_seats
+                user_wallet.balance -= price
                 user_wallet.save()
+                
+                subject = "Ticket Receipt For Recent Booking"
+                message = (f"Hey {this_user.first_name},\n" + \
+                            f"Thank you for booking your railway ticket. Here are the ticket details for your upcoming trip from {train.start} to {train.destination} on {date} \n" + \
+                            f"Train Name: {train.name} \n" + \
+                            f"Number of Seats Booked: {num_seats} \n" + \
+                            f"Section where seats booked: {selected_section} \n" + \
+                            f"Time: {train.time} \n" + \
+                            f"Ticket Price: {price} \n" + \
+                            f"Boarding Point: {train.start} \n" + \
+                            f"Dropping Point: {train.destination}")
+                email = this_user.email
+                send_mail(subject , message, 'settings.EMAIL_HOST_USER' , [email] , fail_silently=False)
+
                 messages.success(request, f'Successfully booked {num_seats} seat(s) in {selected_section.name}.')
-                return redirect('home')
         else:
             messages.error(request, 'Train does not run on this')
 
