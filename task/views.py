@@ -158,7 +158,7 @@ def book_page(request, train_id):
                             f"Thank you for booking your railway ticket. Here are the ticket details for your upcoming trip from {train.start} to {train.destination} on {date} \n" + \
                             f"Train Name: {train.name} \n" + \
                             f"Number of Seats Booked: {num_seats} \n" + \
-                            f"Section where seats booked: {selected_section} \n" + \
+                            f"Section where seats booked: {selected_section.name} \n" + \
                             f"Time: {train.time} \n" + \
                             f"Ticket Price: {price} \n" + \
                             f"Boarding Point: {train.start} \n" + \
