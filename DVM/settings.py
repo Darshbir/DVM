@@ -139,8 +139,4 @@ STATIC_URL = 'static/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
-<<<<<<< HEAD
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-=======
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
->>>>>>> 7200acf784cb69dd9536f018bb2007850b4d79be
