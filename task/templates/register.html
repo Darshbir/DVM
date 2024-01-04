@@ -1,10 +1,9 @@
 {% extends  "base.html" %}
 {% block start %}
-
+{% load socialaccount %}
 <div class ="contianer">
-
+    {% csrf_token %}
     <form class = "col-6 mx-auto card p-3 shadow-lg" method = "POST" enctype = "multipart/form-data">
-        {% csrf_token %}
         <h2> Register User</h2> 
         <hr>
 
@@ -43,6 +42,12 @@
     <p>Already have account ?<a href = "/login/">Login</a> </p>
     <button type="submit" class="btn btn-primary">Submit</button>
     </form>
+    <p style="text-align: center;">Or</p>
+    <button style="display: block; margin-left: auto; margin-right: auto;" type="submit" class="btn btn-outline-info">
+        <a href="{% provider_login_url 'google' %}">
+            Register With Google
+        </a>
+    </button> 
 </div>
 
 {% endblock %}

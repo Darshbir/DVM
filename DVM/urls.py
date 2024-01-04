@@ -16,10 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from task.views import *
-from django.urls import path, include
-from django.views.generic import TemplateView
-from django.contrib.auth.views import LogoutView
-
+from django.urls import path , include, re_path
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home , name = "home"),
@@ -29,4 +26,5 @@ urlpatterns = [
     path('book/', book_page , name = "book_page" ),
     path('book/<int:train_id>/', book_page, name="book_page"),
     path('profile/', profile, name = "profile"),
+    path('accounts/', include('allauth.urls')),
 ]

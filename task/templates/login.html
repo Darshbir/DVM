@@ -1,11 +1,13 @@
 {% extends  "base.html" %}
 {% block start %}
+{% load socialaccount %}
+
 <div class ="contianer">
     {% if user.is_authenticated %}
         <p>Welcome, You are logged in as {{ user.username }}</p>
     {% else %}
+        {% csrf_token %}
         <form class = "col-6 mx-auto card p-3 shadow-lg" method = "POST" enctype = "multipart/form-data">
-            {% csrf_token %}
             <h2> Login User</h2> 
             <hr>
 
@@ -28,6 +30,12 @@
             <p>Don't have account ?<a href = "/register/">Register</a> </p>
             <button type="submit" class="btn btn-primary">Submit</button>
             </form>
+            <p style="text-align: center;">Or</p>
+            <button style="display: block; margin-left: auto; margin-right: auto;" type="submit" class="btn btn-outline-info">
+                <a href = "{% provider_login_url 'google' %}">
+                    Login With Google
+                </a>
+            </button>        
     {% endif %}
 </div>
 

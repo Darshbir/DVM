@@ -31,7 +31,7 @@
                 <label for="section">Choose Section:</label>
                 <select name="section" id="section">
                     {% for section in sections %}
-                        <option value="{{ section.id }}">{{ section.name }} - {{section.price}}</option>
+                        <option value="{{ section.id }}">{{ section.name }} - Rs.{{section.price}}</option>
                     {% endfor %}
                 </select>   
                 <br>

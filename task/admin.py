@@ -5,6 +5,7 @@ admin.site.register(Day)
 admin.site.register(Section)
 admin.site.register(Choices)
 admin.site.register(Train_operating_days)
+admin.site.register(Booking)
 
 def delete_selected_trains(modeladmin, request, queryset):
     for train in queryset:
