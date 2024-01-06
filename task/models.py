@@ -97,6 +97,5 @@ class Booking(models.Model):
     section = models.ForeignKey(Section, on_delete=models.CASCADE, related_name='bookings')
     num_seats = models.IntegerField(default=0)
     date = models.DateField(default=timezone.now)
-    
     def __str__(self):
         return f"{self.user.username} - {self.section.train.name} - {self.section.name.get_name_display()} - {self.num_seats} seats"

@@ -3,28 +3,24 @@
 
 <div class="container d-flex justify-content-center align-items-center vh-100">
     {% if messages %}
-    {% for message in messages %}
-        <div class="alert alert-primary" role="alert">
-            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-        </div>
-    {% endfor %}
+        {% for message in messages %}
+            <div class="alert alert-primary" role="alert">
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            </div>
+        {% endfor %}
     {% endif %}
     <div class="card" style="width: 18rem; margin-top: 10vh;">
         <div class="card-body">
-            
             <h2>Train Details</h2>
             <p class="card-text">Name: {{ train.name }}</p>
             <p class="card-text">Start: {{ train.start }}</p>
             <p class="card-text">Destination: {{ train.destination }}</p>
             <p class="card-text">Time: {{ train.time }}</p>
             <p class="card-text">Operating Days: 
-            {% for day in train.operating_days.all %}
-                {{ day.name }}
-                {% if not forloop.last %}, {% endif %}
-            {% endfor %}
+                <span id="operating-days"></span>
             </p>
             <p class="card-text">Wallet Balance: {{ user.wallet.balance }}</p>
-            <form method="post" action="{% url 'book_page' train.id %}">
+            <form id="book-form" method="post" action="{% url 'book_page' train.id %}">
                 {% csrf_token %}
                 <label for="exampleInputEmail1" class="form-label">Date</label>
                 <input name="date" required type="date" class="form-control">
@@ -36,12 +32,12 @@
                 </select>   
                 <br>
                 <label for="num_seats">Number of Seats:</label>
-                <input type="number" name="num_seats" required>
-                <br>
-                <button type="submit" class="btn btn-primary">Book Seats</button>
+                <input type="number" name="num_seats" required id="num-seats">
+                <br> 
+                <button type="submit" form="book-form" id="submit-btn" class="btn btn-primary" >Book Seats</button>
             </form>
         </div>
     </div>
-</div>
-
+</div>  
+    
 {% endblock %}

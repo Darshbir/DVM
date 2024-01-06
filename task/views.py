@@ -143,8 +143,7 @@ def book_page(request, train_id):
             elif selected_section.available_seats() < num_seats:
                 messages.error(request, 'Not enough available seats.')
             else:
-                Booking.objects.create(user=this_user, section=selected_section, num_seats=num_seats, date = date)
-
+                Booking.objects.create(user=this_user, section=selected_section, num_seats=num_seats, date=date)
                 selected_section.booked_seats += num_seats
                 selected_section.save()
 
@@ -154,20 +153,23 @@ def book_page(request, train_id):
                 user_wallet.save()
                 
                 subject = "Ticket Receipt For Recent Booking"
-                message = (f"Hey {this_user.first_name},\n" + \
-                            f"Thank you for booking your railway ticket. Here are the ticket details for your upcoming trip from {train.start} to {train.destination} on {date} \n" + \
-                            f"Train Name: {train.name} \n" + \
-                            f"Number of Seats Booked: {num_seats} \n" + \
-                            f"Section where seats booked: {selected_section.name} \n" + \
-                            f"Time: {train.time} \n" + \
-                            f"Ticket Price: {price} \n" + \
-                            f"Boarding Point: {train.start} \n" + \
-                            f"Dropping Point: {train.destination}")
+                message = f"""
+                Hey {this_user.first_name},
+
+                Thank you for booking your railway ticket. Here are the ticket details for your upcoming trip from {train.start} to {train.destination} on {date}
+                Train Name: {train.name}
+                Number of Seats Booked: {num_seats}
+                Section where seats booked: {selected_section.name}
+                Time: {train.time}
+                Boarding Point: {train.start}
+                Dropping Point: {train.destination}
+                Total Ticket Price: {price}
+                """
                 email = this_user.email
                 send_mail(subject , message, 'settings.EMAIL_HOST_USER' , [email] , fail_silently=False)
 
                 messages.success(request, f'Successfully booked {num_seats} seat(s) in {selected_section.name}.')
         else:
-            messages.error(request, 'Train does not run on this')
+            messages.error(request, 'Train does not run on this day')
 
     return render(request, 'book.html', {'train': train, 'user': this_user, 'sections': train.sections.all()})
