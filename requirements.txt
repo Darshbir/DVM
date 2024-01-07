@@ -9,11 +9,13 @@ Django==4.2.7
 django-allauth==0.59.0
 Faker==21.0.0
 filelock==3.13.1
+gunicorn==21.2.0
 idna==3.6
 oauthlib==3.2.2
+packaging==23.2
 Pillow==10.1.0
 platformdirs==3.11.0
-psycopg2==2.9.9
+psycopg2-binary==2.9.9
 pycparser==2.21
 PyJWT==2.8.0
 python-dateutil==2.8.2

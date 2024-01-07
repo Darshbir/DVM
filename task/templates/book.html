@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 {% block start %}
 
+<style>
+    #submit-btn {
+        display: none;
+    }
+</style>
+
 <div class="container d-flex justify-content-center align-items-center vh-100">
     {% if messages %}
         {% for message in messages %}
@@ -17,7 +23,11 @@
             <p class="card-text">Destination: {{ train.destination }}</p>
             <p class="card-text">Time: {{ train.time }}</p>
             <p class="card-text">Operating Days: 
-                <span id="operating-days"></span>
+            <p class="card-text">Operating Days: 
+                {% for day in train.operating_days.all %}
+                    {{ day.name }}
+                    {% if not forloop.last %}, {% endif %}
+                {% endfor %}
             </p>
             <p class="card-text">Wallet Balance: {{ user.wallet.balance }}</p>
             <form id="book-form" method="post" action="{% url 'book_page' train.id %}">
@@ -33,11 +43,58 @@
                 <br>
                 <label for="num_seats">Number of Seats:</label>
                 <input type="number" name="num_seats" required id="num-seats">
-                <br> 
-                <button type="submit" form="book-form" id="submit-btn" class="btn btn-primary" >Book Seats</button>
+                
+                <div id="seat-details"></div>
+
+                <br>
+                <button type="button" class="btn btn-primary" onclick="confirmPreview()">Preview Seats</button>
             </form>
+            <button type="submit" form="book-form" id="submit-btn" class="btn btn-primary" disabled>Book Seats</button>
         </div>
     </div>
-</div>  
+</div>
+
+<script>
+function confirmPreview() {
+    var confirmation = confirm("Are you sure you want to preview seats?");
+
+    if (confirmation) {
+        var numSeatsInput = document.getElementById('num-seats');
+        var seatDetailsContainer = document.getElementById('seat-details');
+        var submitBtn = document.getElementById('submit-btn');
+
+        var numSeats = numSeatsInput.value;
+
+        var seatDetailsHTML = '';
+        for (let i = 1; i <= numSeats; i++) {
+            seatDetailsHTML += `
+                <div class="mb-3">
+                    <input type="text" name="name_${i}" placeholder="Name" class="form-control mb-2" required>
+                    <input type="number" name="age_${i}" placeholder="Age" class="form-control mb-2" required>
+                </div>`;
+
+            
+            var genderOptions = ["Male", "Female"];
+            var genderDropdown = document.createElement("select");
+            genderDropdown.id = `genderDropdown_${i}`;
+            genderDropdown.name = `genderDropdown_${i}`;
+            genderOptions.forEach(function (gender) {
+                var option = document.createElement("option");
+                option.value = gender.toLowerCase();
+                option.text = gender;
+                genderDropdown.appendChild(option);
+            });
+
+            seatDetailsHTML += `<div class="mb-3">${genderDropdown.outerHTML}</div>`;
+        }
+
+        seatDetailsContainer.innerHTML = seatDetailsHTML;
+
+        submitBtn.style.display = 'block';
+        submitBtn.removeAttribute('disabled');
+    }
+}
+</script>
+  
     
 {% endblock %}

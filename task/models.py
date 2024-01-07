@@ -91,11 +91,21 @@ class Wallet(models.Model):
 
     def __str__(self):
         return f"Wallet of {self.user.username}"
+
+class Passenger(models.Model):
+    name = models.CharField(max_length = 100)
+    age = models.IntegerField()
+    gender = models.CharField(max_length = 25)
+
+    def __str__(self):
+        return f"Passenger {self.booking.id}"
     
 class Booking(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     section = models.ForeignKey(Section, on_delete=models.CASCADE, related_name='bookings')
     num_seats = models.IntegerField(default=0)
     date = models.DateField(default=timezone.now)
+    passengers = models.ManyToManyField(Passenger)
+    
     def __str__(self):
         return f"{self.user.username} - {self.section.train.name} - {self.section.name.get_name_display()} - {self.num_seats} seats"

@@ -38,9 +38,6 @@ ALLOWED_HOSTS = []
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -99,10 +96,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'db',
-        'USER' : 'postgres',
-        'PASSWORD' : os.environ.get('POSTGRES_PASSWORD'),
-        'HOST' : 'localhost' ,
-        'PORT' : '5432'
+        'USER': 'postgres',
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
