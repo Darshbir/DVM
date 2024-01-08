@@ -9,6 +9,7 @@ from datetime import datetime
 from decimal import Decimal
 from django.core.mail import send_mail
 from django.conf import settings
+from django.db import transaction
 # Create your views here.
 
 def register_page(request):
@@ -144,53 +145,53 @@ def book_page(request, train_id):
             else:
                 booking = Booking.objects.create(user=this_user, section=selected_section, num_seats=num_seats, date = date)
 
-                
-                booking = Booking.objects.create(user=this_user, section=selected_section, num_seats=num_seats, date=date)
-                passengers = []
-                for i in range(1, num_seats + 1):
-                    passenger_name = request.POST.get(f'name_{i}')
-                    passenger_age = request.POST.get(f'age_{i}')
-                    passenger_gender = request.POST.get(f'genderDropdown_{i}')
-                    passengers.append(Passenger.objects.create(
-                    booking=booking,
-                    name=passenger_name,
-                    age=passenger_age,
-                    gender=passenger_gender,
-                ))
-
-                selected_section.booked_seats += num_seats
-                selected_section.save()
-
-                train.update_active_status()
-                price = selected_section.price * num_seats
-                user_wallet.balance -= price
-                user_wallet.save()
-                
-                subject = "Ticket Receipt For Recent Booking"
-                message = f"""
-                Hey {this_user.first_name},
-
-                Thank you for booking your railway ticket. Here are the ticket details for your upcoming trip from {train.start} to {train.destination} on {date}
-                Train Name: {train.name}
-                Number of Seats Booked: {num_seats}
-                Section where seats booked: {selected_section.name}
-                Time: {train.time}
-                Boarding Point: {train.start}
-                Dropping Point: {train.destination}
-
-                Passenger Details:
-                """
-
-                for passenger in passengers:
-                    message += f"""Name: {passenger.name}
-                    Age: {passenger.age}
-                    Gender: {passenger.gender}\n"""
-
-                message += f"Total Ticket Price: {price}\n"
-                email = this_user.email
-                send_mail(subject , message, 'settings.EMAIL_HOST_USER' , [email] , fail_silently=False)
-
-                messages.success(request, f'Successfully booked {num_seats} seat(s) in {selected_section.name}.')
+                with transaction.atomic():
+                    booking = Booking.objects.create(user=this_user, section=selected_section, num_seats=num_seats, date=date)
+                    passengers = []
+                    for i in range(1, num_seats + 1):
+                        passenger_name = request.POST.get(f'name_{i}')
+                        passenger_age = request.POST.get(f'age_{i}')
+                        passenger_gender = request.POST.get(f'genderDropdown_{i}')
+                        passengers.append(Passenger.objects.create(
+                        booking=booking,
+                        name=passenger_name,
+                        age=passenger_age,
+                        gender=passenger_gender,
+                    ))
+    
+                    selected_section.booked_seats += num_seats
+                    selected_section.save()
+    
+                    train.update_active_status()
+                    price = selected_section.price * num_seats
+                    user_wallet.balance -= price
+                    user_wallet.save()
+                    
+                    subject = "Ticket Receipt For Recent Booking"
+                    message = f"""
+                    Hey {this_user.first_name},
+    
+                    Thank you for booking your railway ticket. Here are the ticket details for your upcoming trip from {train.start} to {train.destination} on {date}
+                    Train Name: {train.name}
+                    Number of Seats Booked: {num_seats}
+                    Section where seats booked: {selected_section.name}
+                    Time: {train.time}
+                    Boarding Point: {train.start}
+                    Dropping Point: {train.destination}
+    
+                    Passenger Details:
+                    """
+    
+                    for passenger in passengers:
+                        message += f"""Name: {passenger.name}
+                        Age: {passenger.age}
+                        Gender: {passenger.gender}\n"""
+    
+                    message += f"Total Ticket Price: {price}\n"
+                    email = this_user.email
+                    send_mail(subject , message, 'settings.EMAIL_HOST_USER' , [email] , fail_silently=False)
+    
+                    messages.success(request, f'Successfully booked {num_seats} seat(s) in {selected_section.name}.')
         else:
             messages.error(request, 'Train does not run on this day')
 
