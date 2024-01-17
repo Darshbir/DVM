@@ -3,15 +3,21 @@ from .models import *
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.csrf import csrf_protect , requires_csrf_token
 from django.contrib.auth.decorators import login_required
 from datetime import datetime
 from decimal import Decimal
 from django.core.mail import send_mail
 from django.conf import settings
 from django.db import transaction
+from django.contrib.auth.decorators import user_passes_test
+
 # Create your views here.
 
+def is_consumer(user):
+    return not user.is_staff
+
+@requires_csrf_token
 def register_page(request):
     if request.method == "POST":
         first_name = request.POST.get('first_name')
@@ -55,12 +61,16 @@ def login_page(request):
         if not User.objects.filter(username=username).exists():
             messages.error(request, 'Invalid Username')
             return redirect('/login/')
-
+        
+        user = User.objects.filter(username=username).first()
+        if not user.is_active:
+            return redirect('/ban_screen/') 
+        
         user = authenticate(username=username, password=password)
 
         if user is None:
             messages.error(request, 'Invalid Password')
-            return redirect('/login/')
+            return redirect('/login/')                   
         else:
             login(request, user)
             return redirect('/')
@@ -69,14 +79,16 @@ def login_page(request):
 
 
 @login_required(login_url="/login/")
+@user_passes_test(is_consumer)
 def home(request):
     
-    queryset = Train.objects.all()
+    queryset = None
     
-    for train in queryset:
-        train.update_active_status()
-
     if request.GET.get('start') and request.GET.get('destination') and request.GET.get('date'):
+        queryset = Train.objects.all()
+        for train in queryset:
+            train.update_active_status()
+
         start = request.GET.get('start')
         destination = request.GET.get('destination')
         date = request.GET.get('date')
@@ -101,6 +113,7 @@ def home(request):
 
 
 @login_required(login_url = "/login/")
+@user_passes_test(is_consumer)
 def profile(request):
     this_user = request.user
     try:
@@ -112,14 +125,18 @@ def profile(request):
     bookings = Booking.objects.filter(user= this_user)
 
     if request.method == "POST":
-        amount = Decimal(request.POST.get('amount', 0))
-        wallet.balance += amount
-        wallet.save()
-        messages.success(request, f'Added {amount} to your wallet.')
+        if(amount > 0):
+            amount = Decimal(request.POST.get('amount', 0))
+            wallet.balance += amount
+            wallet.save()
+            messages.success(request, f'Added {amount} to your wallet.')
+        else:
+            messages.error(request, 'Enter a valid amount')
 
     return render(request, 'profile.html', {'wallet': wallet , 'user' : this_user , 'bookings' : bookings})
 
 @login_required(login_url="/login/")
+@user_passes_test(is_consumer)
 def book_page(request, train_id):
     train = get_object_or_404(Train, id=train_id)
     user_wallet = request.user.wallet
@@ -196,3 +213,109 @@ def book_page(request, train_id):
             messages.error(request, 'Train does not run on this day')
 
     return render(request, 'book.html', {'train': train, 'user': this_user, 'sections': train.sections.all()})
+
+
+def is_superuser(user):
+  return user.is_superuser
+
+@requires_csrf_token
+@user_passes_test(is_superuser)
+def admin_register(request):
+    if request.method == "POST":
+        first_name = request.POST.get('first_name')
+        password = request.POST.get('password')
+        username = request.POST.get('username')
+        last_name = request.POST.get('last_name')
+        email = request.POST.get('email')
+
+        user = User.objects.filter(username = username)
+
+        if user.exists():
+            messages.info(request, 'Username already taken')
+            return redirect('/register/')
+
+        user = User.objects.create_user(
+            first_name = first_name,
+            last_name = last_name,
+            username = username,
+            email = email,
+        )
+        user.is_staff = True
+
+        user.set_password(password)
+        user.save()
+        
+        messages.info(request , 'Account created successfully')
+        return redirect('/admin_register/')
+    return render(request, 'admin_register.html')
+
+
+def is_staff(user):
+    return user.is_staff
+
+
+def ban_screen(request):
+    return render(request , 'ban_screen.html')
+
+@user_passes_test(is_staff)
+def staff(request):
+    return render(request , 'staff.html')
+
+@user_passes_test(is_staff)
+def add_train(request):
+    return render(request , 'add_train.html')
+
+@user_passes_test(is_staff)
+def ban_user(request):
+    queryset = None
+
+    username = request.GET.get('username')
+    email_address = request.GET.get('email address')
+
+    if username:
+        queryset = User.objects.all()
+        queryset = queryset.filter(
+            username = username,
+            is_staff = False
+        )
+    elif email_address:
+        queryset = User.objects.all()
+        queryset = queryset.filter(
+            email=email_address,
+            is_staff = False
+            )
+    else:
+        queryset = None
+
+    if not queryset:
+        messages.error(request, 'No user found for the selected criteria')
+
+    return render(request, 'ban_user.html', {'queryset': queryset})
+
+@user_passes_test(is_staff)
+def ban(request , user_id):
+    user = get_object_or_404(User, id=user_id)
+
+    if user.is_active:
+        user.is_active = False
+        user.save()
+        messages.success(request, f'{user.username} has been banned successfully.')
+    else:
+        messages.warning(request, f'{user.username} is already banned.')
+    return redirect('ban_user')
+
+@user_passes_test(is_staff)
+def unban(request , user_id):
+    user = get_object_or_404(User, id=user_id)
+
+    if not user.is_active:
+        user.is_active = True
+        user.save()
+        messages.success(request, f'{user.username} has been unbanned successfully.')
+    else:
+        messages.warning(request, f'{user.username} is already unbanned.')
+    return redirect('ban_user')
+
+@user_passes_test(is_staff)
+def update_train(request):
+    return render(request , 'update_train.html')

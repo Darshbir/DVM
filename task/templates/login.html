@@ -5,9 +5,12 @@
 <div class ="contianer">
     {% if user.is_authenticated %}
         <p>Welcome, You are logged in as {{ user.username }}</p>
+        <br>
+        <p>Not you?</p>
+        <a href = "/logout/">Use Different Account</a>
     {% else %}
-        {% csrf_token %}
         <form class = "col-6 mx-auto card p-3 shadow-lg" method = "POST" enctype = "multipart/form-data">
+            {% csrf_token %}
             <h2> Login User</h2> 
             <hr>
 

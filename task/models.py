@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import DateField
 from django.utils import timezone
+from django.core.validators import MinValueValidator
 
 # Create your models here.
 
@@ -73,8 +74,8 @@ class Train_operating_days(models.Model):
     
 class Section(models.Model):
     name = models.ForeignKey(Choices, on_delete=models.CASCADE)
-    number = models.IntegerField(default = 0)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    number = models.IntegerField(default = 0 , validators=[MinValueValidator(0)])
+    price = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
     train = models.ForeignKey(Train, on_delete=models.CASCADE, related_name='sections')
     booked_seats = models.IntegerField(default = 0)
 
@@ -87,14 +88,14 @@ class Section(models.Model):
 
 class Wallet(models.Model):
     user = models.OneToOneField(User , on_delete = models.CASCADE, related_name = 'wallet')
-    balance = models.DecimalField(max_digits = 10, decimal_places = 2, default = 0)
+    balance = models.DecimalField(max_digits = 10, decimal_places = 2, default = 0, validators=[MinValueValidator(0)])
 
     def __str__(self):
         return f"Wallet of {self.user.username}"
 
 class Passenger(models.Model):
     name = models.CharField(max_length = 100)
-    age = models.IntegerField()
+    age = models.IntegerField(validators=[MinValueValidator(0)])
     gender = models.CharField(max_length = 25)
 
     def __str__(self):
@@ -103,7 +104,7 @@ class Passenger(models.Model):
 class Booking(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     section = models.ForeignKey(Section, on_delete=models.CASCADE, related_name='bookings')
-    num_seats = models.IntegerField(default=0)
+    num_seats = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     date = models.DateField(default=timezone.now)
     passengers = models.ManyToManyField(Passenger)
     

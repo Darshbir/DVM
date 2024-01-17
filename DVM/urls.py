@@ -27,4 +27,10 @@ urlpatterns = [
     path('book/<int:train_id>/', book_page, name="book_page"),
     path('profile/', profile, name = "profile"),
     path('accounts/', include('allauth.urls')),
+    path('admin_register/', admin_register, name = "admin_register"),
+    path('ban_screen/', ban_screen, name = "ban_screen"),
+    path('ban_user/', ban_user, name = "ban_user"),
+    path('ban/<int:user_id>/', ban, name = "ban"),
+    path('unban/<int:user_id>/', unban, name = "unban"),
+    path('staff/', staff, name = "staff")
 ]
