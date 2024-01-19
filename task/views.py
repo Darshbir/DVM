@@ -321,11 +321,13 @@ def add_train(request):
         train_name = request.POST.get('train_name')
         start = request.POST.get('start')
         destination = request.POST.get('destination')
+        time = request.POST.get('time')
 
         new_train = Train.objects.create(
             name = train_name,
             start = start,
-            destination = destination
+            destination = destination,
+            time = time
         )
 
         selected_days = request.POST.getlist('selected_days[]')
@@ -365,16 +367,20 @@ def update_train(request, train_id):
     run_days = Train_operating_days.objects.filter(train=train)
 
     dayset = [day.day.name for day in run_days]
+    time_value = datetime.strptime("12:34:56", "%H:%M:%S").time()
 
+    formatted_time = time_value.strftime("%H:%M")
 
     if request.method == "POST":
         
         train_name = request.POST.get('train_name')
         start = request.POST.get('start')
         destination = request.POST.get('destination')
+        time = request.POST.get('time')
 
         train.name = train_name
         train.start = start
+        train.time = time
         train.destination = destination
         train.save()
 
@@ -422,11 +428,43 @@ def update_train(request, train_id):
             Train_operating_days.objects.create(train=train, day=day)
         messages.success(request, f'Train has been successfully updated.')
         return redirect(reverse('update_train', args=[train_id]))
-    context = {'queryset' : train, 'sectionset' : sectionset, 'dayset' : dayset, 'DAYS_OF_WEEK_CHOICES' : DAYS_OF_WEEK_CHOICES}
+    context = {'queryset' : train, 'sectionset' : sectionset, 'dayset' : dayset, 'DAYS_OF_WEEK_CHOICES' : DAYS_OF_WEEK_CHOICES, 'time' : formatted_time}
     return render(request , 'update_train.html', context)
 
 @user_passes_test(is_staff)
-def delete_train(request, id):
-    queryset = Train.objects.get(id = id)
+def delete_train(request, train_id):
+    queryset = Train.objects.get(id = train_id)
     queryset.delete()
+    messages.warning(request, f'Train has been successfully deleted.')
     return redirect('/staff/')
+
+@user_passes_test(is_staff)
+def booking(request):
+    queryset = Train.objects.all()
+    context = {'queryset': queryset}
+    return render(request, 'bookings.html', context)
+
+@user_passes_test(is_staff)
+def train_bookings(request , train_id):
+    train = get_object_or_404(Train, id = train_id)
+    queryset = Booking.objects.filter(section__train = train)
+    context = {'queryset': queryset, 'train' : train}
+    return render(request , 'this_bookings.html', context)
+
+@user_passes_test(is_staff)
+def delete_booking(request, booking_id):
+    queryset = Booking.objects.get(id = booking_id)
+    queryset.delete()
+    messages.warning(request, f'Booking has been successfully deleted.')
+    return redirect('/booking/')
+
+@login_required
+@user_passes_test(is_consumer)
+def user_delete_booking(request, booking_id):
+    this_user = request.user
+    queryset = get_object_or_404(Booking,
+        id = booking_id,
+        user = this_user)
+    queryset.delete()
+    messages.warning(request, f'Booking has been successfully deleted')
+    return redirect('/profile/')

@@ -1,0 +1,50 @@
+{% extends  "base.html" %}
+{% block start %}
+<div class ="container">
+    <br>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-primary" role="alert">
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            </div>
+        {% endfor %}
+    {% endif %}
+    <br>
+    <h1 style = "text-align: center;">LIST OF TRAINS</h1>
+    {% if queryset %}
+        <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Sr, No.</th>
+            <th scope="col">Train Name</th>
+            <th scope="col">Booking Date</th>
+            <th scope="col">Start</th>
+            <th scope="col">Destination</th>
+            <th scope="col">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for train in queryset %}
+        <tr>
+            <th scope="row">{{ forloop.counter }}</th>
+            <td>{{ train.name }}</td>
+            <td>
+                {% for day in train.operating_days.all %}
+                    {{ day.name }}
+                    {% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </td>
+            <td>{{ train.start }}</td>
+            <td>{{ train.destination }}</td>
+            <td>
+                <a href = "/bookings/{{train.id}}/" class = "btn btn-success">View Bookings</a>
+            </td>
+        </tr>
+        {% endfor %}        
+        </tbody>
+        </table>
+    {% else %}
+        <h1 style = "text-align: center;">There Are No Trains Stored</h1>
+    {% endif %}
+</div>
+{% endblock %}

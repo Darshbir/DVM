@@ -39,6 +39,10 @@
             <label for="destination" class="form-label">Destination</label>
             <input name="destination" required type = "text" class="form-control" value = "{{queryset.destination}}">
         </div>
+        <div class="mb-3">
+            <label for="exampleInputEmail1" class="form-label">Destination</label>
+            <input name="time" required type="time" class="form-control" value="{{ queryset.time|time:'H:i:s' }}">
+        </div>
         <hr>
         <div class="mb-3">
             <h3>Enter Seats and Price for each section</h3>

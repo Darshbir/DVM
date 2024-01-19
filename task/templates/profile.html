@@ -37,6 +37,7 @@
                     <th>Time</th>
                     <th>Date</th>
                     <th>Seats</th>
+                    <th>Action</th>
                 </tr>
             </thead>
         {% if bookings %}
@@ -47,6 +48,9 @@
                     <td>{{ booking.section.train.time }}</td>
                     <td>{{ booking.date }}</td>
                     <td>{{ booking.section.name }} - {{ booking.num_seats }}</td>
+                    <td>
+                        <a href = "/user_delete_booking/{{booking.id}}/" class = "btn btn-danger">Delete</a>
+                    </td>
                 </tr>
         {% endfor %}
         {% endif %}

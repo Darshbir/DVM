@@ -35,5 +35,10 @@ urlpatterns = [
     path('staff/', staff, name = "staff"),
     path('add_train/', add_train, name = "add_train"),
     path('update_train/<int:train_id>/' , update_train , name="update_train"),
-    path('delete_train/<int:train_id>/' , delete_train , name="delete_train")
+    path('delete_train/<int:train_id>/' , delete_train , name="delete_train"),
+    path('booking/', booking, name = "booking"),
+    path('bookings/<int:train_id>/', train_bookings, name = "train_bookings"),
+    path('delete_booking/<int:booking_id>/', delete_booking, name = "delete_booking"),
+    path('user_delete_booking/<int:booking_id>/', user_delete_booking, name = "user_delete_booking")
+
 ]

@@ -1,8 +1,8 @@
-{% extends  "base.html" %}
+{% extends "base.html" %}
 {% block start %}
 <br>
 <br>
-<div class = "container">
+<div class="container">
     {% if messages %}
         {% for message in messages %}
             <div class="alert alert-primary" role="alert">
@@ -10,14 +10,16 @@
             </div>
         {% endfor %}
     {% endif %}
-    <button style="display: block; margin-left: auto; margin-right: auto; width: 400px; margin-top: 200px;" class="btn btn-outline-info">
-        <a href = "/ban_user/">Ban Users</a>
-    </button>
-    <button style="display: block; margin-left: auto; margin-right: auto; width: 400px; margin-top: 10px;" class="btn btn-outline-info">
-        <a href = "/add_train/">Trains Actions</a>
-    </button>
-    <button style="display: block; margin-left: auto; margin-right: auto; width: 400px; margin-top: 10px;" class="btn btn-outline-info">
-        <a href = "/bookings/">Manage Bookings</a>
-    </button>
+    <div style="display: flex; justify-content: center; align-items: center; flex-direction: column; padding: 12px;">
+        <div class="btn btn-outline-info" style="margin-bottom: 10px;">
+            <a href="/ban_user/" style="display: block; margin-left: auto; margin-right: auto; width: 400px;">Ban Users</a>
+        </div>
+        <div class="btn btn-outline-info" style="margin-bottom: 10px;">
+            <a href="/add_train/" style="display: block; margin-left: auto; margin-right: auto; width: 400px;">Train Actions</a>
+        </div>
+        <div class="btn btn-outline-info" style="margin-bottom: 10px;">
+            <a href="/booking/" style="display: block; margin-left: auto; margin-right: auto; width: 400px;">Bookings</a>
+        </div>
+    </div>
 </div>
 {% endblock %}

@@ -1,0 +1,42 @@
+{% extends  "base.html" %}
+{% block start %}
+<div class="container">
+    <h1 style = "text-align: center;">User Bookings</h1>
+    {% if queryset %}
+        <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Sr, No.</th>
+            <th scope="col">Train Name</th>
+            <th scope="col">Booking Date</th>
+            <th scope="col">Section</th>
+            <th scope="col">Number Of Seats</th>
+            <th scope="col">Start</th>
+            <th scope="col">Destination</th>
+            <th scope="col">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for booking in queryset %}
+        <tr>
+            <th scope="row">{{ forloop.counter }}</th>
+            <td>{{ train.name }}</td>
+            <td>{{ booking.date }}</td>
+            <td>{{ booking.section.name }}</td>
+            <td>{{ booking.num_seats }}</td>
+            <td>{{ train.start }}</td>
+            <td>{{ train.destination }}</td>
+            <td>
+                <a href = "/delete_booking/{{booking.id}}/" class = "btn btn-danger">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+        </table>
+    {% else %}
+        <h1 style = "text-align: center;">There Are No Bookings Found For This Train</h1>
+        <br>
+        <a href = "/booking/" style= "display: block; margin-left: 600px; margin-right: auto; width: 400px;">Return</a>
+    {% endif %}
+</div>
+{% endblock %}
