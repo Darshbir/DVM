@@ -1,0 +1,23 @@
+{% extends  "base.html" %}
+{% block start %}
+<br>
+<br>
+<div class = "container">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-primary" role="alert">
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            </div>
+        {% endfor %}
+    {% endif %}
+    <button style="display: block; margin-left: auto; margin-right: auto; width: 400px; margin-top: 200px;" class="btn btn-outline-info">
+        <a href = "/ban_user/">Ban Users</a>
+    </button>
+    <button style="display: block; margin-left: auto; margin-right: auto; width: 400px; margin-top: 10px;" class="btn btn-outline-info">
+        <a href = "/add_train/">Trains Actions</a>
+    </button>
+    <button style="display: block; margin-left: auto; margin-right: auto; width: 400px; margin-top: 10px;" class="btn btn-outline-info">
+        <a href = "/bookings/">Manage Bookings</a>
+    </button>
+</div>
+{% endblock %}

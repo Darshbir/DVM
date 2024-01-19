@@ -1,0 +1,151 @@
+{% extends  "base.html" %}
+{% block start %}
+  <br>
+  <div class ="container">
+  <div class="accordion" id="addTrainAccordion">
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="addTrainHeading">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#addTrainCollapse" aria-expanded="true" aria-controls="addTrainCollapse">
+                Add Train
+            </button>
+        </h2>
+        <div id="addTrainCollapse" class="accordion-collapse collapse" aria-labelledby="addTrainHeading">
+            <div class="accordion-body">
+              {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-primary" role="alert">
+                        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                    </div>
+                {% endfor %}
+              {% endif %}
+              <form method = "POST" enctype = "multipart/form-data">
+                {% csrf_token %}
+                <h2> Add Train</h2> 
+                <hr>
+                <div class="mb-3">
+                  <label for="exampleInputEmail1" class="form-label">Train Name</label>
+                  <input name="train_name" required type = "text" class="form-control" >
+                </div>
+                <div class="btn-group">
+                    <label for="exampleInputEmail1" class="form-label">Choose Operating days.
+                      Press Ctrl to choose multiple
+                    </label>
+                    <select name="selected_days[]" multiple class="form-control">
+                        <option value="Mon">Monday</option>
+                        <option value="Tue">Tuesday</option>
+                        <option value="Wed">Wednesday</option>
+                        <option value="Thu">Thursday</option>
+                        <option value="Fri">Friday</option>
+                        <option value="Sat">Saturday</option>
+                        <option value="Sun">Sunday</option>
+                    </select>            
+                </div>
+                  <div class="mb-3">
+                      <label for="exampleInputEmail1" class="form-label">Starting Point</label>
+                      <input name="start" required type = "text" class="form-control" >
+                    </div>
+                  <div class="mb-3">
+                      <label for="exampleInputEmail1" class="form-label">Destination</label>
+                      <input name="destination" required type = "text" class="form-control" >
+                    </div>
+                  <hr>
+                  <div class="mb-3">
+                      <h3>Enter Seats and Price for suitable sections</h3>
+                  </div>
+                  <div class="mb-3">
+                    <label for="exampleInputPassword1" class="form-label">General Seats</label>
+                    <input name="general_seats" type="number" class="form-control" pattern="\d+">
+                  </div>
+                  <div class="mb-3">
+                    <label for="exampleInputPassword1" class="form-label">General Price</label>
+                    <input name="general_price" type="number" class="form-control" pattern="\d+">
+                  </div>
+                  <div class="mb-3">
+                      <label for="exampleInputPassword1" class="form-label">3A Seats</label>
+                      <input name="3a_seats" type="number" class="form-control" pattern="\d+">
+                  </div>
+                  <div class="mb-3">
+                    <label for="exampleInputPassword1" class="form-label">3A Price</label>
+                    <input name="3a_price" type="number" class="form-control" pattern="\d+">
+                </div>
+                  <div class="mb-3">
+                      <label for="exampleInputPassword1" class="form-label">2A Seats</label>
+                      <input name="2a_seats" type="number" class="form-control" pattern="\d+">
+                  </div>
+                  <div class="mb-3">
+                    <label for="exampleInputPassword1" class="form-label">2A Price</label>
+                    <input name="2a_price" type="number" class="form-control" pattern="\d+">
+                </div>
+                  <div class="mb-3">
+                      <label for="exampleInputPassword1" class="form-label">First Class Seats</label>
+                      <input name="first class_seats" type="number" class="form-control" pattern="\d+">
+                  </div>
+                  <div class="mb-3">
+                    <label for="exampleInputPassword1" class="form-label">First Class Price</label>
+                    <input name="first class_price" type="number" class="form-control" pattern="\d+">
+                </div>
+                  <div class="mb-3">
+                      <label for="exampleInputPassword1" class="form-label">Sleeper Seats</label>
+                      <input name="sleeper_seats" type="number" class="form-control" pattern="\d+">
+                  </div>
+                  <div class="mb-3">
+                    <label for="exampleInputPassword1" class="form-label">Sleeper Price</label>
+                    <input name="sleeper_price" type="number" class="form-control" pattern="\d+">
+                </div>
+        
+               <button type="submit" class="btn btn-success">Add Train</button>
+              </form>
+            </div>
+        </div>
+    </div>
+    <div class="accordion" id="otherAccordion">
+      <div class="accordion-item">
+          <h2 class="accordion-header" id="otherAccordionHeading">
+              <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#otherAccordionCollapse" aria-expanded="true" aria-controls="otherAccordionCollapse">
+                  Update Trains
+              </button>
+          </h2>
+          <div id="otherAccordionCollapse" class="accordion-collapse collapse" aria-labelledby="otherAccordionHeading">
+              <div class="accordion-body">
+                {% if queryset %}
+                  <table class="table">
+                  <thead>
+                  <tr>
+                      <th scope="col">Sr, No.</th>
+                      <th scope="col">Train Name</th>
+                      <th scope="col">Operating Days</th>
+                      <th scope="col">Start</th>
+                      <th scope="col">Destination</th>
+                      <th scope="col">Actions</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  {% for train in queryset %}
+                  <tr>
+                      <th scope="row">{{ forloop.counter }}</th>
+                      <td>{{ train.name }}</td>
+                      <td>
+                          {% for day in train.operating_days.all %}
+                              {{ day.name }}
+                              {% if not forloop.last %}, {% endif %}
+                          {% endfor %}
+                      </td>
+                      <td>{{ train.start }}</td>
+                      <td>{{ train.destination }}</td>
+                      <td>
+                          <a href = "/update_train/{{train.id}}/" class = "btn btn-success">Update</a>
+                          <a href = "/delete_train/{{train.id}}/" class = "btn btn-danger m-2"> Delete </a>
+                      </td>
+                  </tr>
+                  {% endfor %}        
+                  </tbody>
+                  </table>
+                {% endif %}   
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+</div>
+
+{% endblock %}

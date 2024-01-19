@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block start %}
+
+<div class="container">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-primary" role="alert">
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            </div>
+        {% endfor %}
+    {% endif %}
+    <form class="col-6 mx-auto card p-3 shadow-lg" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <h2>Updating {{ queryset.name }} Train</h2>
+        <hr>
+        <div class="mb-3">
+            <label for="train_name" class="form-label">Train Name</label>
+            <input name="train_name" required type = "text" class="form-control" value = "{{queryset.name}}">
+        </div>
+        <div class="btn-group">
+            <div class="btn-group">
+                <label for="selectedDays" class="form-label">Choose Operating days. Press Ctrl to choose multiple</label>
+                <select id="selectedDays" name="selected_days[]" multiple class="form-control" required>
+                    {% for day_choice in DAYS_OF_WEEK_CHOICES %}
+                        {% if day_choice.0 in dayset %}
+                            <option value="{{ day_choice.0 }}" selected>{{ day_choice.1 }}</option>
+                        {% else %}
+                            <option value="{{ day_choice.0 }}">{{ day_choice.1 }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="start" class="form-label">Starting Point</label>
+            <input name="start" required type = "text" class="form-control" value = "{{queryset.start}}">
+        </div>
+        <div class="mb-3">
+            <label for="destination" class="form-label">Destination</label>
+            <input name="destination" required type = "text" class="form-control" value = "{{queryset.destination}}">
+        </div>
+        <hr>
+        <div class="mb-3">
+            <h3>Enter Seats and Price for each section</h3>
+        </div>
+        {% for section in sectionset %}
+            <div class="mb-3">
+                <label for="{{ section.name }}_seats" class="form-label">{{ section.name }} Seats</label>
+                <input name="{{ section.name }}_seats" type="number" required class="form-control" pattern="\d+" value="{{ section.number }}">
+            </div>
+            <div class="mb-3">
+                <label for="{{ section.name }}_price" class="form-label">{{ section.name }} Price</label>
+                <input name="{{ section.name }}_price" type="number" required class="form-control" pattern="\d+" value="{{ section.price }}">
+            </div>
+        {% endfor %}
+
+        <button type="submit" class="btn btn-success">Update Train</button>
+    </form>
+
+</div>
+
+{% endblock %}

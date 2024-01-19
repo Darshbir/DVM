@@ -11,6 +11,8 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.db import transaction
 from django.contrib.auth.decorators import user_passes_test
+from .decorators import staff_login_redirect
+from django.urls import reverse
 
 # Create your views here.
 
@@ -77,7 +79,7 @@ def login_page(request):
 
     return render(request, 'login.html')
 
-
+@staff_login_redirect
 @login_required(login_url="/login/")
 @user_passes_test(is_consumer)
 def home(request):
@@ -111,7 +113,7 @@ def home(request):
 
     return render(request, 'home.html', {'queryset': queryset, 'sectionset': sectionset})
 
-
+@staff_login_redirect
 @login_required(login_url = "/login/")
 @user_passes_test(is_consumer)
 def profile(request):
@@ -253,17 +255,12 @@ def admin_register(request):
 def is_staff(user):
     return user.is_staff
 
-
 def ban_screen(request):
     return render(request , 'ban_screen.html')
 
 @user_passes_test(is_staff)
 def staff(request):
     return render(request , 'staff.html')
-
-@user_passes_test(is_staff)
-def add_train(request):
-    return render(request , 'add_train.html')
 
 @user_passes_test(is_staff)
 def ban_user(request):
@@ -317,5 +314,119 @@ def unban(request , user_id):
     return redirect('ban_user')
 
 @user_passes_test(is_staff)
-def update_train(request):
-    return render(request , 'update_train.html')
+def add_train(request):
+    queryset = Train.objects.all()
+    if request.method == "POST":
+        
+        train_name = request.POST.get('train_name')
+        start = request.POST.get('start')
+        destination = request.POST.get('destination')
+
+        new_train = Train.objects.create(
+            name = train_name,
+            start = start,
+            destination = destination
+        )
+
+        selected_days = request.POST.getlist('selected_days[]')
+        
+        all_days = Day.objects.all()
+
+        for day_name in selected_days:
+            day_name_lower = day_name.lower()
+
+            day = all_days.filter(name__iexact=day_name_lower).first()
+
+            Train_operating_days.objects.create(train=new_train, day=day)
+        
+        for section_name, _ in SEAT_CHOICES:
+            num_seats = 0
+            price = 0
+            if request.POST.get(f'{section_name.lower()}_seats') and request.POST.get(f'{section_name.lower()}_price', 0):
+                num_seats = int(request.POST.get(f'{section_name.lower()}_seats', 0))
+                price = float(request.POST.get(f'{section_name.lower()}_price', 0))
+
+            Section.objects.create(
+                name=Choices.objects.get(name=section_name),
+                number=num_seats,
+                price=price,
+                train=new_train
+            )
+
+        messages.success(request, f'Train has been added successfully.')
+        return redirect('/staff/')
+    return render(request, 'add_train.html', {'queryset' : queryset})
+
+@user_passes_test(is_staff)
+def update_train(request, train_id):
+    train = get_object_or_404(Train, id = train_id)
+    sectionset = Section.objects.filter(train = train)
+    
+    run_days = Train_operating_days.objects.filter(train=train)
+
+    dayset = [day.day.name for day in run_days]
+
+
+    if request.method == "POST":
+        
+        train_name = request.POST.get('train_name')
+        start = request.POST.get('start')
+        destination = request.POST.get('destination')
+
+        train.name = train_name
+        train.start = start
+        train.destination = destination
+        train.save()
+
+        for section_name, _ in SEAT_CHOICES:
+            num_seats = 0
+            price = 0
+            if request.POST.get(f'{section_name}_seats') and request.POST.get(f'{section_name}_price'):
+                choices_instance, _ = Choices.objects.get_or_create(name=section_name)
+                dele = Section.objects.filter(name=choices_instance, train=train)
+                existing_section = dele.first()
+
+                print(f"section_name: {section_name}")
+                print(f"choices_instance: {choices_instance}")
+                print(f"existing_section: {existing_section}")
+
+                if existing_section:
+                    booked_seats = existing_section.booked_seats
+                        
+                    num_seats = int(request.POST.get(f'{section_name}_seats', 0))
+                    if num_seats < 0 or price < 0:
+                        messages.error(request, f'Invalid number of seats in {section_name}')
+                    if booked_seats > num_seats:
+                        messages.error(request, f'There are more booked seats than the new seat number in {section_name}')
+                    else:
+                        existing_section.number = num_seats
+                        existing_section.price = float(request.POST.get(f'{section_name}_price', 0))
+                        existing_section.save()
+                else:
+                    Section.objects.create(
+                        name=choices_instance,
+                        number=num_seats,
+                        price=float(request.POST.get(f'{section_name}_price', 0)),
+                        train=train,
+                        booked_seats=num_seats
+                    )
+
+        selected_days = request.POST.getlist('selected_days[]')
+        
+        idk = Train_operating_days.objects.filter(train=train)
+        idk.delete()
+        all_days = Day.objects.all()
+        for day_name in selected_days:
+            day = all_days.get(name=day_name)
+
+            Train_operating_days.objects.create(train=train, day=day)
+        messages.success(request, f'Train has been successfully updated.')
+        return redirect(reverse('update_train', args=[train_id]))
+    context = {'queryset' : train, 'sectionset' : sectionset, 'dayset' : dayset, 'DAYS_OF_WEEK_CHOICES' : DAYS_OF_WEEK_CHOICES}
+    return render(request , 'update_train.html', context)
+
+@user_passes_test(is_staff)
+def delete_train(request, id):
+    queryset = Train.objects.get(id = id)
+    queryset.delete()
+    return redirect('/staff/')

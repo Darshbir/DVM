@@ -1,5 +1,19 @@
 from django.contrib import admin
 from .models import *
+from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.models import User
+from allauth.socialaccount.models import SocialAccount
+from allauth.socialaccount.models import SocialApp
+
+class SuperuserOnlyAdminSite(admin.AdminSite):
+    def has_permission(self, request):
+        return request.user.is_active and request.user.is_superuser
+
+admin.site = SuperuserOnlyAdminSite(name='superuser_admin')
+
+admin.site.register(User, UserAdmin)
+admin.site.register(SocialAccount)
+admin.site.register(SocialApp)
 
 # Register your models here.
 admin.site.register(Section)

@@ -75,9 +75,9 @@ class Train_operating_days(models.Model):
 class Section(models.Model):
     name = models.ForeignKey(Choices, on_delete=models.CASCADE)
     number = models.IntegerField(default = 0 , validators=[MinValueValidator(0)])
-    price = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
+    price = models.DecimalField(default = 0, max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
     train = models.ForeignKey(Train, on_delete=models.CASCADE, related_name='sections')
-    booked_seats = models.IntegerField(default = 0)
+    booked_seats = models.PositiveIntegerField(default = 0)
 
     def available_seats(self):
         total_seats = self.number

@@ -32,5 +32,8 @@ urlpatterns = [
     path('ban_user/', ban_user, name = "ban_user"),
     path('ban/<int:user_id>/', ban, name = "ban"),
     path('unban/<int:user_id>/', unban, name = "unban"),
-    path('staff/', staff, name = "staff")
+    path('staff/', staff, name = "staff"),
+    path('add_train/', add_train, name = "add_train"),
+    path('update_train/<int:train_id>/' , update_train , name="update_train"),
+    path('delete_train/<int:train_id>/' , delete_train , name="delete_train")
 ]
