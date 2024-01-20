@@ -40,5 +40,4 @@ urlpatterns = [
     path('bookings/<int:train_id>/', train_bookings, name = "train_bookings"),
     path('delete_booking/<int:booking_id>/', delete_booking, name = "delete_booking"),
     path('user_delete_booking/<int:booking_id>/', user_delete_booking, name = "user_delete_booking")
-
 ]

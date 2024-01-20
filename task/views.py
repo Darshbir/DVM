@@ -127,8 +127,8 @@ def profile(request):
     bookings = Booking.objects.filter(user= this_user)
 
     if request.method == "POST":
+        amount = Decimal(request.POST.get('amount', 0))
         if(amount > 0):
-            amount = Decimal(request.POST.get('amount', 0))
             wallet.balance += amount
             wallet.save()
             messages.success(request, f'Added {amount} to your wallet.')
