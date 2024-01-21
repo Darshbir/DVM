@@ -5,8 +5,11 @@ Users can register on the site and book tickets according to their requirements.
 This is the basic user home page with normal search functionality.
 ![image](https://github.com/Darshbir/Railway-Ticketing-System--DVM-R2-/assets/87403404/03e7b574-fd67-414b-a9b5-dddc72eb22a9)
 
-A screen like this appears when you try to book your tickets in a train.
+A screen like this appears when you try to book your tickets in a train. This screen further prompts you to enter passenger details.
 ![image](https://github.com/Darshbir/Railway-Ticketing-System--DVM-R2-/assets/87403404/059325d1-d821-4692-9cd7-42956340e860)
+
+On successful booking, an email is received on your registered email address
+![image](https://github.com/Darshbir/Railway-Ticketing-System--DVM-R2-/assets/87403404/5283e156-7634-45c4-9db9-80ec716eb7a4)
 
 There is a usual login option along with a choice to login through google (setup through allauth).
 ![image](https://github.com/Darshbir/Railway-Ticketing-System--DVM-R2-/assets/87403404/df82a104-b8dd-4b72-9812-f23717d46950)
