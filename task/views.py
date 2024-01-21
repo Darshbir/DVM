@@ -130,7 +130,7 @@ def profile(request):
         amount = Decimal(request.POST.get('amount', 0))
         if(amount > 0):
             wallet.balance += amount
-            wallet.save()
+            wallet.save()   
             messages.success(request, f'Added {amount} to your wallet.')
         else:
             messages.error(request, 'Enter a valid amount')
