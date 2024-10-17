@@ -1,5 +1,9 @@
 This is my try at making a fully fledged  ticketing system for a hypothetical railway network to support both the passengers and the railway administration. {Primary database used is POSTGRESQL}
 
+DB Schema
+![image](https://github.com/user-attachments/assets/fc8e4883-f798-47f3-839a-14d398796be9)
+
+
 Users can register on the site and book tickets according to their requirements. The railway administration can create new trains and update existing train routes.
 
 This is the basic user home page with normal search functionality.
